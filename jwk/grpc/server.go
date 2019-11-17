@@ -50,7 +50,7 @@ func tokenVerifyFunc(ctx context.Context) (context.Context, error) {
 	hasScope := false
 	result := strings.Split(claims.Scope, " ")
 	for i := range result {
-		//check scope "read:users"
+		//check scope "read:users" ; if not contains this, will failed pass
 		if result[i] == "read:users" {
 			hasScope = true
 		}

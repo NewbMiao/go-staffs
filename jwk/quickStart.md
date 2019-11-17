@@ -35,3 +35,13 @@ key: {0xc0001e8170 [0xc0001b0000] QjY4MzJBMzc5NkQxODU0OTJGOERFRENBMjEyNjA2RjFERj
 go run jwk/grpc/server.go
 go run jwk/grpc/client.go
 ```
+```
+client pass jwt token in dial; `UnaryClientInterceptor` is the key point
+server check token vaild and check scope "read:users"
+`tokenVerifyFunc` is the key point
+if contains, will get:
+`2019/11/17 17:35:30 Greeting: Hello world`
+
+if not contains this, will failed pass
+`2019/11/17 17:36:16 could not greet: rpc error: code = PermissionDenied desc = invalid scope`
+```
