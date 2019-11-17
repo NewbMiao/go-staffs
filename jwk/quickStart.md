@@ -1,5 +1,5 @@
-#  JWKS (supported by auth0)
-## what is JWKS?
+#  JWK (supported by auth0)
+## what is JWK?
 |Item|	Description|
 |---|---|
 |JSON Web Key (JWK)|	A JSON object that represents a cryptographic key. The members of the object represent properties of the key, including its value.|

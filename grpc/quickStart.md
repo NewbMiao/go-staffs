@@ -60,6 +60,7 @@ About `metadata` in example which usually used for authentication. [see](https:/
 
 ### middleware
 [go-grpc-middleware](https://github.com/grpc-ecosystem/go-grpc-middleware)
+[see jwk with grpc](jwk/quickStart.md#grpc-with-jwt)
 
 ## request tools
 ### [grpcurl](https://github.com/fullstorydev/grpcurl)

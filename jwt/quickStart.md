@@ -22,3 +22,4 @@ go run main.go
 ```
 
 ## auth0
+[see jwk](jwk/quickStart.md)
