@@ -10,7 +10,8 @@ Auth0 exposes a JWKS endpoint for each tenant, which is found at https://YOUR_DO
 [jwks](https://auth0.com/docs/jwks)
 ## quickStart
 ```
-# use auth0 free trier account for test
+# **use auth0 free trier account for test**
+# **if it expired, u can change it to yours (see env in file: `jwk/utils/token.go`)**
 go run jwk/server.go
 go run jwk/client.go
 ```
@@ -27,4 +28,10 @@ request  http://localhost:3010/api/private-scoped
 {"message":"Insufficient scope."}
 get public key from JWK_URI
 key: {0xc0001e8170 [0xc0001b0000] QjY4MzJBMzc5NkQxODU0OTJGOERFRENBMjEyNjA2RjFERjNGQTQ1RA RS256 sig}
+```
+
+## grpc with jwt
+```
+go run jwk/grpc/server.go
+go run jwk/grpc/client.go
 ```

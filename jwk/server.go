@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/newbmiao/go-staffs/jwk/utils"
 	"net/http"
 	"strings"
 
@@ -30,23 +31,18 @@ type JSONWebKeys struct {
 	E string `json:"e"`
 	X5c []string `json:"x5c"`
 }
-const (
-	//free trier account:  https://auth0.com/signup?&signUpData=%7B%22category%22%3A%22docs%22%7D
-	AUTH0_DOMAIN="https://newbmiao.auth0.com"
-	AUTH0_AUDIENCE="https://newbmiao.auth0.com/api/v2/"
-)
 
 func main() {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options {
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			// Verify 'aud' claim
-			aud := AUTH0_AUDIENCE
+			aud :=utils.AUTH0_AUDIENCE
 			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 			if !checkAud {
 				return token, errors.New("Invalid audience.")
 			}
 			// Verify 'iss' claim
-			iss := AUTH0_DOMAIN+"/"
+			iss := utils.AUTH0_DOMAIN+"/"
 			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
 			if !checkIss {
 				return token, errors.New("Invalid issuer.")
@@ -137,7 +133,7 @@ func checkScope(scope string, tokenString string) bool {
 
 func getPemCert(token *jwt.Token) (string, error) {
 	cert := ""
-	resp, err := http.Get(AUTH0_DOMAIN+ "/.well-known/jwks.json")
+	resp, err := http.Get(utils.AUTH0_DOMAIN+ "/.well-known/jwks.json")
 
 	if err != nil {
 		return cert, err
