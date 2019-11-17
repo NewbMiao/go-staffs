@@ -1,0 +1,92 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/auth0-community/go-auth0"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"time"
+)
+
+const (
+	//free trier account:  https://auth0.com/signup?&signUpData=%7B%22category%22%3A%22docs%22%7D
+	AUTH0_DOMAIN1   = "https://newbmiao.auth0.com"
+	AUTH0_AUDIENCE1 = "https://newbmiao.auth0.com/api/v2/"
+	CLIENT_ID       = "2QMsBU6bru7gtSR3k3S39LVVZLLh12o2"
+	CLIENT_SECRET   = "k4DTlMmBKgau0X6Rge6VbwMQKC2Ewq-RSURPTd59ivLFT5zA-jXGLxQxLsOIDNN4"
+	KID             = "QjY4MzJBMzc5NkQxODU0OTJGOERFRENBMjEyNjA2RjFERjNGQTQ1RA"
+)
+
+func main() {
+	var url = "http://localhost:3010/api/private"
+	token := getToken()
+	requestPrivate(token, url)
+	url = "http://localhost:3010/api/private-scoped"
+	requestPrivate(token, url)
+
+	//go-auth0
+	getPublicKey()
+
+}
+
+type tokenType struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int    `json:"expires_in"`
+	Scope       string `json:"scope"`
+	TokenType   string `json:"token_type"`
+}
+
+func getToken() string {
+
+	var token tokenType
+	url := AUTH0_DOMAIN1 + "/oauth/token"
+
+	payload := strings.NewReader("{\"client_id\":\"" + CLIENT_ID + "\",\"client_secret\":\"" + CLIENT_SECRET +
+		"\",\"audience\":\"" + AUTH0_AUDIENCE1 + "\",\"grant_type\":\"client_credentials\"}")
+
+	req, _ := http.NewRequest("POST", url, payload)
+
+	req.Header.Add("content-type", "application/json")
+
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	json.Unmarshal(body, &token)
+	fmt.Println("get token:", token.AccessToken)
+	return token.AccessToken
+}
+func requestPrivate(token, url string) {
+	fmt.Println("request ", url)
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("authorization", "Bearer "+token)
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	//fmt.Println(res)
+	fmt.Println(string(body))
+}
+
+//the way different from server.go -> getPemCert()
+func getPublicKey() {
+	fmt.Println("get public key from JWK_URI")
+	opts := auth0.JWKClientOptions{URI: AUTH0_DOMAIN1 + "/.well-known/jwks.json"}
+	// Creating key cacher with max age of 100sec and max size of 5 entries.
+	// Defaults to persistent key cacher if not specified when creating a client.
+	keyCacher := auth0.NewMemoryKeyCacher(time.Duration(100)*time.Second, 5)
+	client := auth0.NewJWKClientWithCache(opts, nil, keyCacher)
+
+	searchedKey, err := client.GetKey(KID)
+
+	if err != nil {
+		fmt.Println("Cannot get key because of", err)
+		return
+	}
+	fmt.Println("key:", searchedKey)
+}
