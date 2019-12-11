@@ -21,6 +21,8 @@ import (
 
 // location of the files used for signing and verification
 const (
+	// TODO need generate by yourself
+
 	privKeyPath = "test/sample_key"     // openssl genrsa -out app.rsa keysize
 	pubKeyPath  = "test/sample_key.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
 )
