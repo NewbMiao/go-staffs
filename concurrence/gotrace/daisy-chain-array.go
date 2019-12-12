@@ -1,30 +1,38 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
+	"os"
+	"runtime/trace"
+	"time"
 )
 
 func f(left chan<- int, right <-chan int) {
-    left <- 1 + <-right
+	left <- 1 + <-right
 }
 
 func main() {
-    const n = 10000
+	trace.Start(os.Stderr)
+	defer trace.Stop()
 
-    // first we construct an array of n+1 channels each being a 'chan int'
-    var channels [n+1]chan int
-    for i := range channels {
-        channels[i] = make(chan int)
-    }
+	const n = 100
 
-    // now we wire n goroutines in a chain
-    for i := 0; i < n; i++ {
-        go f(channels[i], channels[i+1])
-    }
+	// first we construct an array of n+1 channels each being a 'chan int'
+	var channels [n + 1]chan int
+	for i := range channels {
+		channels[i] = make(chan int)
+	}
 
-    // insert a value into the right-hand end
-    go func(c chan<- int) { c <- 1 }(channels[n])
+	// now we wire n goroutines in a chain
+	for i := 0; i < n; i++ {
+		time.Sleep(time.Microsecond * 10)
+		go f(channels[i], channels[i+1])
+	}
 
-    // pick up the value emerging from the left-hand end
-    fmt.Println(<-channels[0])
+	// insert a value into the right-hand end
+	time.Sleep(time.Microsecond * 10)
+	go func(c chan<- int) { c <- 1 }(channels[n])
+
+	// pick up the value emerging from the left-hand end
+	fmt.Println(<-channels[0])
 }

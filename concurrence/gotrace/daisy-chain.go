@@ -15,7 +15,7 @@ func main() {
 	trace.Start(os.Stderr)
 	defer trace.Stop()
 
-	const n = 10000
+	const n = 100
 	leftmost := make(chan int)
 	right := leftmost
 	left := leftmost
