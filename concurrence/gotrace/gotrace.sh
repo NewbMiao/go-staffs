@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DOCKERPATH="https://gist.githubusercontent.com/NewbMiao/f4340b483e3dfc057911cba8e7a37562/raw/4383fff99051ecd5a09bec4c8bd7cac0b46a57ae/Dockerfile"
 GOTRACECMD="docker run --rm -it  -p 2000:2000  -v \$PWD:/go divan/golang:gotrace1.8"
 
 if [ $# -eq 0 ]; then
@@ -10,7 +11,7 @@ if [ $# -eq 0 ]; then
     exit;
 fi
 
-if [ "$GOOS" == "linux" ]; then # build on docker container
+if [ -f /.dockerenv ]; then # build on docker container
     gotrace $1
 else # build on local machine
     exist=$(docker images|grep divan/golang |grep gotrace1.8|wc -l)
@@ -20,11 +21,10 @@ else # build on local machine
             workspace=$(cd $(dirname $0) && pwd -P)
             cd $workspace
             if [ ! -f "Dockerfile" ]; then 
-                curl -o Dockerfile "https://gist.githubusercontent.com/NewbMiao/f4340b483e3dfc057911cba8e7a37562/raw/7b8ab53511af85f614d3354b2da40ec9c21c5e76/Dockerfile"
+                curl -o Dockerfile "$DOCKERPATH"
             fi
             docker build . -t  divan/golang:gotrace1.8
         }
     fi
     eval $GOTRACECMD $1
 fi
-
