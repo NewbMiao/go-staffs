@@ -1,5 +1,8 @@
 package main
 
+// go test . -bench  BenchmarkCutSlice -benchmem   -memprofile=mem.out
+// go tool pprof -http=localhost:8080 mem.out
+
 import "testing"
 
 type bigStruct struct {
@@ -20,12 +23,6 @@ func BenchmarkCutSlicePointer(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		cutSlicePointer(a, 1, 800)
-	}
-}
-
-func BenchmarkCopySlice(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		// println(1)
 	}
 }
 
